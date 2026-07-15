@@ -3,21 +3,25 @@
 //       node forjs.mjs          → self-check
 import { readFileSync } from 'node:fs';
 import { strict as assert } from 'node:assert';
+import { pathToFileURL } from 'node:url';
 
 // ponytail: regex 치환, 진짜 파서 아님 — 문자열/주석 안의 `->`, f(1) 같은
 // 괄호 포함 경계값에서 깨짐. 필요해지면 acorn 기반으로 교체.
 export function transpile(src) {
   return src.replace(
-    /for\s*\(\s*([^()]+?)\s*->\s*([^()]+?)\s*\)/g,
-    'for (let i = $1, _end = $2; i <= _end; i++)',
+    /for\s*\(\s*(?:let\s+([A-Za-z_$][\w$]*)\s*=\s*)?([^()=]+?)\s*->\s*([^()]+?)\s*\)/g,
+    (_, name = 'i', start, end) =>
+      `for (let ${name} = ${start}, _end = ${end}; ${name} <= _end; ${name}++)`,
   );
 }
 
-const file = process.argv[2];
+const isMain =
+  process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+const file = isMain && process.argv[2];
 if (file) {
   const js = transpile(readFileSync(file, 'utf8'));
   await import(`data:text/javascript;base64,${Buffer.from(js).toString('base64')}`);
-} else {
+} else if (isMain) {
   assert.equal(
     transpile('for (1 -> 10) {}'),
     'for (let i = 1, _end = 10; i <= _end; i++) {}',
@@ -29,5 +33,12 @@ if (file) {
   const out2 = [];
   eval(transpile('for (n - 2 -> n) { out2.push(i) }'));
   assert.deepEqual(out2, [2, 3, 4]);
+  assert.equal(
+    transpile('for (let max = 1 -> 10) {}'),
+    'for (let max = 1, _end = 10; max <= _end; max++) {}',
+  );
+  const out3 = [];
+  eval(transpile('for (let k = 2 -> 4) { out3.push(k) }'));
+  assert.deepEqual(out3, [2, 3, 4]);
   console.log('self-check ok');
 }
