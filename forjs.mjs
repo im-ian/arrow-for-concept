@@ -11,7 +11,8 @@ export function transpile(src) {
   return src.replace(
     /for\s*\(\s*(?:let\s+([A-Za-z_$][\w$]*)\s*=\s*)?([^()=]+?)\s*->\s*([^()]+?)\s*\)/g,
     (_, name = 'i', start, end) =>
-      `for (let ${name} = ${start}, _end = ${end}; ${name} <= _end; ${name}++)`,
+      `for (let ${name} = ${start}, _end = ${end}, _step = ${name} <= _end ? 1 : -1; ` +
+      `_step > 0 ? ${name} <= _end : ${name} >= _end; ${name} += _step)`,
   );
 }
 
@@ -24,7 +25,8 @@ if (file) {
 } else if (isMain) {
   assert.equal(
     transpile('for (1 -> 10) {}'),
-    'for (let i = 1, _end = 10; i <= _end; i++) {}',
+    'for (let i = 1, _end = 10, _step = i <= _end ? 1 : -1; ' +
+      '_step > 0 ? i <= _end : i >= _end; i += _step) {}',
   );
   const out = [];
   eval(transpile('for (1 -> 3) { out.push(i) }'));
@@ -35,10 +37,14 @@ if (file) {
   assert.deepEqual(out2, [2, 3, 4]);
   assert.equal(
     transpile('for (let max = 1 -> 10) {}'),
-    'for (let max = 1, _end = 10; max <= _end; max++) {}',
+    'for (let max = 1, _end = 10, _step = max <= _end ? 1 : -1; ' +
+      '_step > 0 ? max <= _end : max >= _end; max += _step) {}',
   );
   const out3 = [];
   eval(transpile('for (let k = 2 -> 4) { out3.push(k) }'));
   assert.deepEqual(out3, [2, 3, 4]);
+  const out4 = [];
+  eval(transpile('for (5 -> 1) { out4.push(i) }'));
+  assert.deepEqual(out4, [5, 4, 3, 2, 1]);
   console.log('self-check ok');
 }
