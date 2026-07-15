@@ -32,16 +32,16 @@ for (let m = Math.min(1, 5) -> Math.max(1, 3)) {} // 괄호 포함 경계값 OK
 ### 1. CLI로 단일 파일 실행
 
 ```bash
-node forjs.mjs demo.forjs
+node forjs.mjs <파일.forjs>
 ```
 
 ### 2. Loader hook — `.forjs`를 모듈처럼 import
 
 ```bash
-node --import ./register.mjs main.mjs
+node --import ./register.mjs <진입점.mjs>
 ```
 
-`main.mjs`에서 `import './demo.forjs'` 하면 import 시점에 자동 트랜스파일된다. TypeScript가 동작하는 것과 같은 방식.
+진입점에서 `import './어떤파일.forjs'` 하면 import 시점에 자동 트랜스파일된다. TypeScript가 동작하는 것과 같은 방식.
 
 ### 3. Self-check
 
@@ -66,8 +66,6 @@ v1은 regex 텍스트 치환이라 코드 구조를 몰랐다. v2는 2단계:
 | `forjs.mjs` | `tokenize()` + `transpile()` + CLI 러너 + self-check |
 | `hooks.mjs` | Node module load hook (`.forjs` 트랜스파일) |
 | `register.mjs` | hook 등록 진입점 (`--import`용) |
-| `demo.forjs` | 신문법 데모 |
-| `main.mjs` | loader hook 데모 진입점 |
 | `v1/` | regex 기반 초기 버전 (비교용 보존) |
 
 ## 제약 (알려진 한계)
