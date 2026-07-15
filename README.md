@@ -3,19 +3,25 @@
 JS에 `for (start -> end)` 범위 루프 문법을 추가하는 실험용 트랜스파일러.
 
 ```js
-for (1 -> 5) {
-  console.log(i); // 암묵 변수 i, 1~5 (양끝 포함)
+for (let i = 1 -> 5) {
+  console.log(i); // 1~5 (양끝 포함)
 }
 
-for (let step = 1 -> 3) {
-  console.log(step); // 변수명 지정
+for (let d = 5 -> 1) {
+  console.log(d); // 내림차순 자동
+}
+
+for (1 -> 3) {
+  console.log('tick'); // 카운터 없이 N회 반복
 }
 
 const max = 3;
-for (max -> max + 2) {} // 표현식 경계 가능
+for (let b = max -> max + 2) {} // 표현식 경계 가능
 ```
 
-변환 결과: `for (1 -> 10)` → `for (let i = 1, _end = 10, _step = i <= _end ? 1 : -1; _step > 0 ? i <= _end : i >= _end; i += _step)`
+변환 결과: `for (let i = 1 -> 10)` → `for (let i = 1, _end = 10, _step = i <= _end ? 1 : -1; _step > 0 ? i <= _end : i >= _end; i += _step)`
+
+카운터를 쓰려면 `let 이름 =` 필수. 암묵 변수 없음 — `for (1 -> 3)` 형태는 body에서 카운터 접근 불가, 단순 반복 전용.
 
 `10 -> 1` 처럼 시작이 크면 자동으로 내림차순. 방향은 런타임에 결정 (경계가 표현식일 수 있으므로).
 

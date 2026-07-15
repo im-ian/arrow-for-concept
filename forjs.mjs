@@ -10,7 +10,7 @@ import { pathToFileURL } from 'node:url';
 export function transpile(src) {
   return src.replace(
     /for\s*\(\s*(?:let\s+([A-Za-z_$][\w$]*)\s*=\s*)?([^()=]+?)\s*->\s*([^()]+?)\s*\)/g,
-    (_, name = 'i', start, end) =>
+    (_, name = '_i', start, end) =>
       `for (let ${name} = ${start}, _end = ${end}, _step = ${name} <= _end ? 1 : -1; ` +
       `_step > 0 ? ${name} <= _end : ${name} >= _end; ${name} += _step)`,
   );
@@ -25,15 +25,15 @@ if (file) {
 } else if (isMain) {
   assert.equal(
     transpile('for (1 -> 10) {}'),
-    'for (let i = 1, _end = 10, _step = i <= _end ? 1 : -1; ' +
-      '_step > 0 ? i <= _end : i >= _end; i += _step) {}',
+    'for (let _i = 1, _end = 10, _step = _i <= _end ? 1 : -1; ' +
+      '_step > 0 ? _i <= _end : _i >= _end; _i += _step) {}',
   );
   const out = [];
-  eval(transpile('for (1 -> 3) { out.push(i) }'));
-  assert.deepEqual(out, [1, 2, 3]);
+  eval(transpile('for (1 -> 3) { out.push(0) }'));
+  assert.equal(out.length, 3);
   const n = 4;
   const out2 = [];
-  eval(transpile('for (n - 2 -> n) { out2.push(i) }'));
+  eval(transpile('for (let j = n - 2 -> n) { out2.push(j) }'));
   assert.deepEqual(out2, [2, 3, 4]);
   assert.equal(
     transpile('for (let max = 1 -> 10) {}'),
@@ -44,7 +44,7 @@ if (file) {
   eval(transpile('for (let k = 2 -> 4) { out3.push(k) }'));
   assert.deepEqual(out3, [2, 3, 4]);
   const out4 = [];
-  eval(transpile('for (5 -> 1) { out4.push(i) }'));
+  eval(transpile('for (let d = 5 -> 1) { out4.push(d) }'));
   assert.deepEqual(out4, [5, 4, 3, 2, 1]);
   console.log('self-check ok');
 }
