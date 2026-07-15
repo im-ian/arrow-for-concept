@@ -1,0 +1,8 @@
+for (1 -> 5) {
+  console.log('i =', i);
+}
+
+const max = 3;
+for (max -> max + 2) {
+  console.log('expr bound:', i);
+}
