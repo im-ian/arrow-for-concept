@@ -10,9 +10,13 @@ import { pathToFileURL } from 'node:url';
 export function transpile(src) {
   return src.replace(
     /for\s*\(\s*(?:let\s+([A-Za-z_$][\w$]*)\s*=\s*)?([^()=]+?)\s*->\s*([^()]+?)\s*\)/g,
-    (_, name = '_i', start, end) =>
-      `for (let ${name} = ${start}, _end = ${end}, _step = ${name} <= _end ? 1 : -1; ` +
-      `_step > 0 ? ${name} <= _end : ${name} >= _end; ${name} += _step)`,
+    (_, name, start, end) =>
+      name === undefined
+        ? // 빈 destructuring 패턴 = 바인딩 0개, body에서 접근 가능한 변수 없음.
+          // Array(n)은 sparse라 큰 범위도 실메모리 할당 없음.
+          `for (const {} of Array(Math.abs((${start}) - (${end})) + 1).keys())`
+        : `for (let ${name} = ${start}, _end = ${end}, _step = ${name} <= _end ? 1 : -1; ` +
+          `_step > 0 ? ${name} <= _end : ${name} >= _end; ${name} += _step)`,
   );
 }
 
@@ -25,12 +29,14 @@ if (file) {
 } else if (isMain) {
   assert.equal(
     transpile('for (1 -> 10) {}'),
-    'for (let _i = 1, _end = 10, _step = _i <= _end ? 1 : -1; ' +
-      '_step > 0 ? _i <= _end : _i >= _end; _i += _step) {}',
+    'for (const {} of Array(Math.abs((1) - (10)) + 1).keys()) {}',
   );
   const out = [];
   eval(transpile('for (1 -> 3) { out.push(0) }'));
   assert.equal(out.length, 3);
+  let leaked = false;
+  eval(transpile('for (1 -> 1) { try { _i; leaked = true } catch {} }'));
+  assert.equal(leaked, false, 'no internal binding visible in body');
   const n = 4;
   const out2 = [];
   eval(transpile('for (let j = n - 2 -> n) { out2.push(j) }'));
