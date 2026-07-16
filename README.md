@@ -33,10 +33,18 @@ const color = match fruit {
   'banana' => 'yellow'
   _ => 'unknown'
 };
+
+// 인자 위치에서 바로 사용 + 식별자 패턴(값 비교) + 중첩
+const NOT_FOUND = 404;
+console.log(match status {
+  200 => 'ok'
+  NOT_FOUND => 'not found'
+  _ => match kind { 'net' => 'network error' _ => 'other' }
+});
 ```
 
-- **표현식** — 값 위치 어디서나 사용 가능 (`const x = match ...`, 인자, 다른 match 안 등).
-- 패턴은 `===` 비교 (내부적으로 `switch` 로 변환). `_` 는 와일드카드.
+- **표현식** — 값 위치 어디서나 사용 가능 (`const x = match ...`, 인자, 다른 match 의 arm 안 등).
+- 패턴은 `===` 비교 (내부적으로 `switch` 로 변환). 리터럴 외에 식별자·멤버 표현식도 패턴 가능 — 값으로 평가해 비교. `_` 만 와일드카드.
 - arm 사이 콤마는 선택. 판별값은 한 번만 평가.
 - `_` 없이 어떤 arm 도 안 맞으면 `TypeError` (조용한 `undefined` 대신 명시적 에러).
 - `match` 는 예약어가 아님 — 뒤에 식별자/리터럴이 올 때만 키워드로 해석되고, `match(x)` 는 평범한 함수 호출로 남는다.
