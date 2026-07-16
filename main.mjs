@@ -1,3 +1,3 @@
-import './demo.forjs';
+import './demo.xjs';
 
-console.log('imported .forjs like a native module');
+console.log('imported .xjs like a native module');

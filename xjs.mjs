@@ -1,7 +1,7 @@
-// forjs v3 — AST 기반 `for (start -> end)` 트랜스파일러
-// acorn 파서 플러그인으로 문법 확장 → ForRangeStatement 노드 → astring codegen
-// 사용: node forjs.mjs <file>   → 트랜스파일 후 실행
-//       node forjs.mjs          → self-check
+// xjs — AST 기반 `for (start -> end)` 트랜스파일러
+// acorn 파서 플러그인으로 문법 확장 → 커스텀 AST 노드 → astring codegen
+// 사용: node xjs.mjs <file>   → 트랜스파일 후 실행
+//       node xjs.mjs          → self-check
 import { readFileSync } from 'node:fs';
 import { strict as assert } from 'node:assert';
 import { pathToFileURL } from 'node:url';

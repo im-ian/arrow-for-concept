@@ -32,21 +32,21 @@ for (let m = Math.min(1, 5) -> Math.max(1, 3)) {} // 임의 표현식 경계
 ### 1. CLI로 단일 파일 실행
 
 ```bash
-node forjs.mjs demo.forjs
+node xjs.mjs demo.xjs
 ```
 
-### 2. Loader hook — `.forjs`를 모듈처럼 import
+### 2. Loader hook — `.xjs`를 모듈처럼 import
 
 ```bash
 node --import ./register.mjs main.mjs
 ```
 
-`main.mjs`에서 `import './demo.forjs'` 하면 import 시점에 자동 트랜스파일된다. TypeScript가 동작하는 것과 같은 방식.
+`main.mjs`에서 `import './demo.xjs'` 하면 import 시점에 자동 트랜스파일된다. TypeScript가 동작하는 것과 같은 방식.
 
 ### 3. Self-check
 
 ```bash
-node forjs.mjs
+node xjs.mjs
 # → self-check ok
 ```
 
@@ -72,10 +72,10 @@ node forjs.mjs
 
 | 파일 | 역할 |
 |------|------|
-| `forjs.mjs` | 파서 플러그인 + `transpile()` + CLI 러너 + self-check |
-| `hooks.mjs` | Node module load hook (`.forjs` 트랜스파일) |
+| `xjs.mjs` | 파서 플러그인 + `transpile()` + CLI 러너 + self-check |
+| `hooks.mjs` | Node module load hook (`.xjs` 트랜스파일) |
 | `register.mjs` | hook 등록 진입점 (`--import`용) |
-| `demo.forjs` | 신문법 데모 |
+| `demo.xjs` | 신문법 데모 |
 | `main.mjs` | loader hook 데모 진입점 |
 | `v1/`, `v2/` | 이전 버전 (비교용 보존) |
 
