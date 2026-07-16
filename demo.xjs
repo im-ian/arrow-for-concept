@@ -39,3 +39,24 @@ for (let i = 1 -> 4) {
     _ => 'odd'
   });
 }
+
+// match 는 표현식 — 인자 위치에서 바로 사용, 식별자 패턴은 값 비교
+const NOT_FOUND = 404;
+const status = 404;
+console.log('http:', match status {
+  200 => 'ok'
+  NOT_FOUND => 'not found'
+  _ => 'other'
+});
+
+// 중첩 match
+const size = 'M';
+const region = 'KR';
+console.log('label:', match region {
+  'KR' => match size {
+    'S' => '소'
+    'M' => '중'
+    _ => '대'
+  }
+  _ => size
+});
