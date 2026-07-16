@@ -22,3 +22,20 @@ for (let m = Math.min(1, 5) -> Math.max(1, 3)) {
 
 // v2: 문자열 안의 패턴은 안 건드림 (v1 regex 에선 오변환)
 console.log('not a loop: for (1 -> 2)');
+
+// v3: match 표현식 — 판별값 === 비교, `_` 는 와일드카드
+const fruit = 'banana';
+const color = match fruit {
+  'apple' => 'red'
+  'banana' => 'yellow'
+  _ => 'unknown'
+};
+console.log('match:', color); // match: yellow
+
+// for-range 와 조합
+for (let i = 1 -> 4) {
+  console.log('parity:', match i % 2 {
+    0 => 'even'
+    _ => 'odd'
+  });
+}
